@@ -1,4 +1,4 @@
 #!/bin/bash
 
-lex scanner.l;
+lex lex.l;
 gcc -o scanner lex.yy.c;

@@ -8,6 +8,10 @@
 * Samuel Glenn Bryant
 	* sbryant1@email.arizona.edu
 
+## Description
+
+* flex 2.6.4 used
+
 ## Test Usage
 
 ```bash

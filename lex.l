@@ -22,44 +22,17 @@ anything		.
 	──Non-terminals──
 */
 id				{letter}{alfanum}*
-charcon			["\n""\0"] | {ch}
+charcon			'({ch}|\\n|\\0)'
 intcon			{digit}+
-stringcon		{ch}+
+stringcon		\"({ch}|\n)[^\"]+\"
+
 prog			{stmt}+
 
-stmt			(if"("{expr}")"{stmt}(else{stmt})?)
-				|
-				(while"("{expr}")"{stmt})
-				|
-				(for"("{assg}?";"{expr}?";"{assg}?")"{stmt})
-				|
-				(return{expr}?";")
-				|
-				({assg}";")
-				|
-				({id}"("({expr}(","{expr})*)?")"";")
-				|
-				("{"{stmt}*"}")
-				|
-				";"
+stmt			(if"("{expr}")"{stmt}(else{stmt})?)|(while"("{expr}")"{stmt})|(for"("{assg}?";"{expr}?";"{assg}?")"{stmt})|(return{expr}?";")|({assg}";")|({id}"("({expr}(","{expr})*)?")"";")|("{"{stmt}*"}")|";"
 
 assg			{id}("["{expr}"]")?"="{expr}
 
-expr			("-"{expr})
-				|
-				("!"{expr})
-				|
-				({expr}{bin_op}{expr})
-				|
-				({expr}{rel_op}{expr})
-				|
-				({expr}{logical_op}{expr})
-				|
-				({id}("("({expr}(","{expr})*)?")"|("["{expr}"]"))?)
-				|
-				("("{expr}")")
-				|
-				{intcon}|{charcon}|{stringcon}
+expr			("-"{expr})|("!"{expr})|({expr}{bin_op}{expr})|({expr}{rel_op}{expr})|({expr}{logical_op}{expr})|({id}("("({expr}(","{expr})*)?")"|("["{expr}"]"))?)|("("{expr}")")|{intcon}|{charcon}|{stringcon}
 
 /*
 	──States──
@@ -75,7 +48,10 @@ expr			("-"{expr})
 <INITIAL>{
 
 	{commentStart}	{ BEGIN(COMMENT); }
-	{id}			{ printf("id: %s\n", yytext); }
+	{charcon}		{ printf("CHAR: %s\n", yytext); }
+	{stringcon}		{ printf("STR: %s\n", yytext); }
+	{intcon}		{ printf("INT: %s\n", yytext); }
+	{id}			{ printf("ID: %s\n", yytext); }
 	{eol}
 	{anything}
 

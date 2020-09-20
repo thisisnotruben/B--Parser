@@ -2,6 +2,24 @@
 
 %}
 
+
+/*
+
+				──CURRENT PROBLEMS──
+
+	└ whitespace between expr throws off identification,
+	need to remove whitespace between expr for it to identify
+	or manually include whitespace in each RegEX
+	(2nd option is do-abe, but sloppy and lot of work)
+
+	└ Self recursive statements like: `expr` & `stmt`
+	are causing a `stack overflow`, to remedy for right now,
+	manually exlude the recursive statements and only allow 
+	the terminal symbols (stringcon, charcon, intcon, id)
+
+*/
+
+
 /*
 	──Terminals──
 */

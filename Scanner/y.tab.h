@@ -7,7 +7,7 @@
 #define LESEQU 264 
 #define GREATE 265 
 #define LESSTH 266
- 
+
 #define ANDCOM 267 
 #define ORCOMP 268 
 #define SEMIC 269 
@@ -19,7 +19,7 @@
 #define LCURL 275 
 #define RCURL 276 
 #define ABANG 277
- 
+  
 #define EQUAL 278 
 #define ADD 279 
 #define SUB 280 

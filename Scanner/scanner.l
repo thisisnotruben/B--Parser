@@ -19,7 +19,7 @@ digit			[0-9]
 whitespace		[ \t]
 eol				\n
 alfanum			[A-Za-z0-9_]
-intcon			[digit]+
+intcon			{digit}+
 
 id				{letter}{alfanum}*
 
@@ -61,42 +61,49 @@ anything		.
                         }
 <string_in>[^\"\n]      yymore();
 
-<INITIAL>"=="           {return(EQUALS);}
-<INITIAL>"!="           {return(NOTEQU);}
-<INITIAL>">="           {return(GREEQU);}
-<INITIAL>"<="           {return(LESEQU);}
-<INITIAL>">"            {return(GREATE);}
-<INITIAL>"<"            {return(LESSTH);}
-<INITIAL>"&&"           {return(ANDCOM);}
-<INITIAL>"||"           {return(ORCOMP);}
-<INITIAL>";"            {return(SEMIC);}
-<INITIAL>","            {return(COMMA);}
-<INITIAL>"("            {return(LPARN);}
-<INITIAL>")"            {return(RPARN);}
-<INITIAL>"["            {return(LBRAC);}
-<INITIAL>"]"            {return(RBRAC);}
-<INITIAL>"{"            {return(LCURL);}
-<INITIAL>"}"            {return(RCURL);}
-<INITIAL>"="            {return(EQUAL);}
-<INITIAL>"+"            {return(ADD);}
-<INITIAL>"-"            {return(SUB);}
-<INITIAL>"*"            {return(MUL);}
-<INITIAL>"/"            {return(DIV);}
-        
-<INITIAL>"for"			 {return(FOR);}				
-<INITIAL>"if"			 {return(IF);}
-<INITIAL>"else"          {return(ELSE);}
-<INITIAL>"while"         {return(WHILE);}
-<INITIAL>"return"        {return(RETURN);}
+<INITIAL>{
 
-<INITIAL>{intcon}        {return(INTCON);}
-<INITIAL>{charcon}       {return(CHARCON);}
+    "=="           {return(EQUALS);}
+    "!="           {return(NOTEQU);}
+    ">="           {return(GREEQU);}
+    "<="           {return(LESEQU);}
+    ">"            {return(GREATE);}
+    "<"            {return(LESSTH);}
+    "&&"           {return(ANDCOM);}
+    "||"           {return(ORCOMP);}
+    ";"            {return(SEMIC);}
+    ","            {return(COMMA);}
+    "("            {return(LPARN);}
+    ")"            {return(RPARN);}
+    "["            {return(LBRAC);}
+    "]"            {return(RBRAC);}
+    "{"            {return(LCURL);}
+    "}"            {return(RCURL);}
+    "!"            {return(ABANG);}
+    "="            {return(EQUAL);}
+    "+"            {return(ADD);}
+    "-"            {return(SUB);}
+    "*"            {return(MUL);}
+    "/"            {return(DIV);}
+            
+    "for"			{return(FOR);}				
+    "if"			{return(IF);}
+    "else"          {return(ELSE);}
+    "while"         {return(WHILE);}
+    "return"        {return(RETURN);}
+    "void"          {return(VOID);}
 
-<INITIAL>{id}			 {return(ID);}
-<INITIAL>{whitespace}    ;
+    {intcon}        {return(INTCON);}
+    {charcon}       {return(CHARCON);}
+
+    {id}			{return(ID);}
+    {whitespace}    ;
 
 
-<INITIAL>{anything}      {return(OTHER);}
+    {anything}      {return(OTHER);}
+
+}
+
 
 %%
 

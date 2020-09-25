@@ -6,7 +6,8 @@
 #define GREEQU 263 
 #define LESEQU 264 
 #define GREATE 265 
-#define LESSTH 266 
+#define LESSTH 266
+ 
 #define ANDCOM 267 
 #define ORCOMP 268 
 #define SEMIC 269 
@@ -17,7 +18,8 @@
 #define RBRAC 274 
 #define LCURL 275 
 #define RCURL 276 
-#define ABANG 277 
+#define ABANG 277
+ 
 #define EQUAL 278 
 #define ADD 279 
 #define SUB 280 
@@ -29,7 +31,8 @@
 #define WHILE 286 
 #define RETURN 287 
 #define IF 288 
-#define ELSE 289 
+#define ELSE 289
+ 
 #define VOID 290 
 #define CHAR 291
 #define INT 292

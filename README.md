@@ -15,5 +15,5 @@
 ## Test Usage
 
 ```bash
-./make.sh ; ./scanner < p1_testcases/testcases/test$TEST_NUMBER.c
+./scannerTest.sh $TEST_NUMBER
 ```

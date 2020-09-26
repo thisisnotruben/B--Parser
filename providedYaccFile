@@ -91,23 +91,27 @@ Relop : EQUALS { Y_DEBUG_PRINT("Relop-1-EQUALS"); }
 
 main()
 {
-int result = yyparse();
-if (lex_state==1) {
-yyerror("End of file within a comment");
+    int result = yyparse();
+    if (lex_state==1) {
+    yyerror("End of file within a comment");
+    }
+    if (lex_state==2) {
+    yyerror("End of file within a string");
+    }
+    return result;
 }
-if (lex_state==2) {
-yyerror("End of file within a string");
+
+int yywrap()
+{
+    return 1;
 }
-return result;
-}
-int yywrap(){
-return 1;
-}
+
 yyerror(char *s)
 {
-fprintf(stderr, "%s on line %d",s,input_line_no);
+    fprintf(stderr, "%s on line %d",s,input_line_no);
 }
+
 warn(char *s)
 {
-fprintf(stderr, "%s\n", s);
+    fprintf(stderr, "%s\n", s);
 }

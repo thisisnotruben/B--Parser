@@ -57,7 +57,7 @@ anything		.
                         }
 <string_in>\"           {
                         BEGIN(INITIAL);
-                        printf("\tstr -> %s\n",yytext);
+                        return(STRINGCON);
                         }
 <string_in>[^\"\n]      yymore();
 

@@ -70,7 +70,6 @@ expr			("-"{expr})|("!"{expr})|({expr}{bin_op}{expr})|({expr}{rel_op}{expr})|({e
 	{stringcon}		{ printf("STR: %s\n", yytext); }
 	{intcon}		{ printf("INT: %s\n", yytext); }
 	{id}			{ printf("ID: %s\n", yytext); }
-	
 	{eol}
 	{anything}
 

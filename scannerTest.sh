@@ -8,20 +8,18 @@ OUTPUT_FILE="scannerResults.txt"
 EXTENSION=".c"
 NEW_LINE=$'\n'
 
-testResults=""
-
 function makeScanner {
 	lex parse.l
 	yacc -dv parse.y
 	gcc -o scanner lex.yy.c y.tab.h
 }
 function run {
-	./scanner < $TEST_DIR/test$1.c
+	./scanner < $TEST_DIR/test$1$EXTENSION
 }
 
 function runAll {
 
-	testResults+="──── Date made: $(date) ────$NEW_LINE"
+	testResults="──── Date made: $(date) ────$NEW_LINE"
 
 	makeScanner
 	for filePath in $TEST_DIR/*$EXTENSION; do

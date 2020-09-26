@@ -2,13 +2,13 @@
 
 #include "y.tab.h"
 
-#define DEBUG_LEX 1
+#define DEBUG_LEX 0
 
 #ifdef DEBUG_LEX
-	#define DEBUG_PRINT(x, y) printf("%d\t%s\t%s\n", y, x, yytext);
+	#define DEBUG_PRINT(x, y) printf("%d\t%s\t%s\n", y, x, yytext)
 #else
 	#define DEBUG_PRINT(x, y)
-#endif
+#endif // DEBUG_LEX
 
 int input_line_nbr = 1, lex_state = 0;
 
@@ -35,46 +35,46 @@ stringcon		\"({ch}|\n)[^\"]+\"
 	"/*"			{ BEGIN(COMMENT); }
 	\"				{ BEGIN(STRING); yymore(); }
 
-	"=="			{ DEBUG_PRINT("EQUALS", EQUALS) return EQUALS; }
-	"!="			{ DEBUG_PRINT("NOTEQU", NOTEQU) return NOTEQU; }
-	">="			{ DEBUG_PRINT("GREEQU", GREEQU) return GREEQU; }
-	"<="			{ DEBUG_PRINT("LESEQU", LESEQU) return LESEQU; }
-	">" 			{ DEBUG_PRINT("GREATE", GREATE) return GREATE; }
-	"<" 			{ DEBUG_PRINT("LESSTH", LESSTH) return LESSTH; }
-	"&&"			{ DEBUG_PRINT("ANDCOM", ANDCOM) return ANDCOM; }
-	"||"			{ DEBUG_PRINT("ORCOMP", ORCOMP) return ORCOMP; }
-	";" 			{ DEBUG_PRINT("SEMIC", SEMIC) return SEMIC; }
-	"," 			{ DEBUG_PRINT("COMMA", COMMA) return COMMA; }
-	"(" 			{ DEBUG_PRINT("LPARN", LPARN) return LPARN; }
-	")" 			{ DEBUG_PRINT("RPARN", RPARN) return RPARN; }
-	"[" 			{ DEBUG_PRINT("LBRAC", LBRAC) return LBRAC; }
-	"]" 			{ DEBUG_PRINT("RBRAC", RBRAC) return RBRAC; }
-	"{" 			{ DEBUG_PRINT("LCURL", LCURL) return LCURL; }
-	"}" 			{ DEBUG_PRINT("RCURL", RCURL) return RCURL; }
-	"!" 			{ DEBUG_PRINT("ABANG", ABANG) return ABANG; }
-	"=" 			{ DEBUG_PRINT("EQUAL", EQUAL) return EQUAL; }
-	"+" 			{ DEBUG_PRINT("ADD", ADD) return ADD; }
-	"-" 			{ DEBUG_PRINT("SUB", SUB) return SUB; }
-	"*" 			{ DEBUG_PRINT("MUL", MUL) return MUL; }
-	"/" 			{ DEBUG_PRINT("DIV", DIV) return DIV; }
-	"for"			{ DEBUG_PRINT("FOR", FOR) return FOR; }
-	"if"			{ DEBUG_PRINT("IF", IF) return IF; }
-	"else"			{ DEBUG_PRINT("ELSE", ELSE) return ELSE; }
-	"while"			{ DEBUG_PRINT("WHILE", WHILE) return WHILE; }
-	"return"		{ DEBUG_PRINT("RETURN", RETURN) return RETURN; }
-	"void"			{ DEBUG_PRINT("VOID", VOID) return VOID; }
-	{intcon}		{ DEBUG_PRINT("INTCON", INTCON) return INTCON; }
-	{charcon}		{ DEBUG_PRINT("CHARCON", CHARCON) return CHARCON; }
-	{id}			{ DEBUG_PRINT("ID", ID) return ID; }
+	"=="			{ DEBUG_PRINT("EQUALS", EQUALS); return EQUALS; }
+	"!="			{ DEBUG_PRINT("NOTEQU", NOTEQU); return NOTEQU; }
+	">="			{ DEBUG_PRINT("GREEQU", GREEQU); return GREEQU; }
+	"<="			{ DEBUG_PRINT("LESEQU", LESEQU); return LESEQU; }
+	">"				{ DEBUG_PRINT("GREATE", GREATE); return GREATE; }
+	"<"				{ DEBUG_PRINT("LESSTH", LESSTH); return LESSTH; }
+	"&&"			{ DEBUG_PRINT("ANDCOM", ANDCOM); return ANDCOM; }
+	"||"			{ DEBUG_PRINT("ORCOMP", ORCOMP); return ORCOMP; }
+	";"				{ DEBUG_PRINT("SEMIC", SEMIC); return SEMIC; }
+	","				{ DEBUG_PRINT("COMMA", COMMA); return COMMA; }
+	"("				{ DEBUG_PRINT("LPARN", LPARN); return LPARN; }
+	")"				{ DEBUG_PRINT("RPARN", RPARN); return RPARN; }
+	"["				{ DEBUG_PRINT("LBRAC", LBRAC); return LBRAC; }
+	"]"				{ DEBUG_PRINT("RBRAC", RBRAC); return RBRAC; }
+	"{"				{ DEBUG_PRINT("LCURL", LCURL); return LCURL; }
+	"}"				{ DEBUG_PRINT("RCURL", RCURL); return RCURL; }
+	"!"				{ DEBUG_PRINT("ABANG", ABANG); return ABANG; }
+	"="				{ DEBUG_PRINT("EQUAL", EQUAL); return EQUAL; }
+	"+"				{ DEBUG_PRINT("ADD", ADD); return ADD; }
+	"-"				{ DEBUG_PRINT("SUB", SUB); return SUB; }
+	"*"				{ DEBUG_PRINT("MUL", MUL); return MUL; }
+	"/"				{ DEBUG_PRINT("DIV", DIV); return DIV; }
+	"for"			{ DEBUG_PRINT("FOR", FOR); return FOR; }
+	"if"			{ DEBUG_PRINT("IF", IF); return IF; }
+	"else"			{ DEBUG_PRINT("ELSE", ELSE); return ELSE; }
+	"while"			{ DEBUG_PRINT("WHILE", WHILE); return WHILE; }
+	"return"		{ DEBUG_PRINT("RETURN", RETURN); return RETURN; }
+	"void"			{ DEBUG_PRINT("VOID", VOID); return VOID; }
+	{intcon}		{ DEBUG_PRINT("INTCON", INTCON); return INTCON; }
+	{charcon}		{ DEBUG_PRINT("CHARCON", CHARCON); return CHARCON; }
+	{id}			{ DEBUG_PRINT("ID", ID); return ID; }
 	{whitespace}	{ ; }
 	{eol}			{ input_line_nbr++; }
-	{anything}		{ DEBUG_PRINT("ANYTHING", -1) return OTHER; }
+	{anything}		{ DEBUG_PRINT("ANYTHING", -1); return OTHER; }
 
 }
 
 <STRING>{
 
-	\"				{ DEBUG_PRINT("STRINGCON", STRINGCON) BEGIN(INITIAL); return STRINGCON; }
+	\"				{ DEBUG_PRINT("STRINGCON", STRINGCON); BEGIN(INITIAL); return STRINGCON; }
 	[^\"\n]			{ yymore(); }
 
 }

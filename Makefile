@@ -12,12 +12,12 @@ ERRS=	err01 err02 err03 err04 err05 err06 err07 err08 err09 err10 \
 		err21 err22 err23 err24
 
 parse:	parse.l parse.y
-	lex < parse.l
-	yacc -dv parse.y
-	gcc -o parse lex.yy.c y.tab.c -ll
+	lex parse.l
+	yacc -d -v parse.y
+	gcc -o parse lex.yy.c y.tab.c
 
 clean:
-	rm lex.yy.c y.output y.tab.c y.tab.h a.out scanner
+	rm lex.yy.c y.output y.tab.c y.tab.h parse
 
 $(TESTS): parse
 	./parse < $(TESTDIR)/$@.c

@@ -10,10 +10,16 @@
 
 ## Description
 
-* flex 2.6.4 used
+* Flex 2.6.4.
 * Bison 3.0.4.
 
-## Test Usage
+## Todo
+
+- [ ] 5 negative test cases
+
+## Test Usage for Flex
+
+Switch `DEBUG_LEX` to `1` in [parse.l](parse.l)
 
 ```bash
 # to run specific test in 'testcases/'
@@ -21,4 +27,9 @@
 
 # to run all tests and output to 'scannerResults.txt'
 ./scannerTest.sh ALL
+```
+
+## Test Usage
+```bash
+make $TEST_FILE
 ```

@@ -2,21 +2,23 @@
 
 #include <stdio.h>
 
-#define YDEBUG
-#ifndef YDEBUG
+#define YDEBUG 0
 
-#define Y_DEBUG_PRINT(x)
-
+#ifdef YDEBUG
+	#define Y_DEBUG_PRINT(x) printf("Yout %s \n ",x)
 #else
-
-#define Y_DEBUG_PRINT(x) printf("Yout %s \n ",x)
-
+	#define Y_DEBUG_PRINT(x)
 #endif // YDEBUG
+
+void yyerror(char const *);
+void warn(char const *s);
+
+extern int lex_state;
 
 int yydebug = 1;
 extern char the_token[];
 /* This is how I read tokens from lex... :) */
-extern int input_line_no;
+extern int input_line_nbr;
 /* This is the current line number */
 extern char *full_line;
 /* This is the full line */
@@ -95,26 +97,16 @@ int main(int argc, char **argv)
 	{
 		yyerror("End of file within a comment");
 	}
-	if (lex_state == 2)
+	else if (lex_state == 2)
 	{
 		yyerror("End of file within a string");
 	}
 
 	return result;
 }
-/*
-int yywrap()
-{
-	return 1;
-}
 
-void yyerror(char *s)
-{
-	fprintf(stderr, "%s on line %d",s,input_line_no);
-}
+int yywrap() { return 1; }
 
-void warn(char *s)
-{
-	fprintf(stderr, "%s\n", s);
-}
-*/
+void yyerror(char const *s) { fprintf(stderr, "%s on line %d", s, input_line_nbr); }
+
+void warn(char const *s) { fprintf(stderr, "%s\n", s); }

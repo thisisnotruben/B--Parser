@@ -16,8 +16,13 @@ parse:	parse.l parse.y
 	yacc -d -v parse.y
 	gcc -o parse lex.yy.c y.tab.c
 
+scanner:	parse.l parse.y
+	lex parse.l
+	yacc -dv parse.y
+	gcc -o scanner lex.yy.c y.tab.h
+
 clean:
-	rm lex.yy.c y.output y.tab.c y.tab.h parse
+	rm lex.yy.c y.output y.tab.c y.tab.h parse scanner
 
 $(TESTS): parse
 	./parse < $(TESTDIR)/$@.c

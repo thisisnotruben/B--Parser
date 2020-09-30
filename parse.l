@@ -4,9 +4,12 @@
 
 #define DEBUG_LEX 0
 
-#ifdef DEBUG_LEX
-	#define DEBUG_PRINT(x, y) printf("%d\t%s\t%s\n", y, x, yytext)
-#else
+#define DEBUG_PRINT(x, y) \
+	if (DEBUG_LEX) \
+		printf("%d\t%s\t%s\n", y, x, yytext)
+
+#ifndef DEBUG_LEX
+	#undef DEBUG_PRINT(x, y)
 	#define DEBUG_PRINT(x, y)
 #endif // DEBUG_LEX
 

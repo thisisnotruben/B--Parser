@@ -23,13 +23,26 @@ Switch `DEBUG_LEX` to `1` in [parse.l](parse.l)
 
 ```bash
 # to run specific test in 'testcases/'
-./scannerTest.sh $TEST_NUMBER
+./test.sh $TEST_NUMBER
 
-# to run all tests and output to 'scannerResults.txt'
-./scannerTest.sh ALL
+# to run all tests and output to 'resultS.txt'
+./test.sh s
+```
+
+## Test Usage for Bison
+
+Switch `DEBUG_LEX` to `0` in [parse.l](parse.l)
+
+Switch `YDEBUG` to `1` IN [parse.y](parse.y) for debug output or `0` to cease all output
+
+```bash
+# to run all tests and output to 'resultP.txt'
+./test.sh p
 ```
 
 ## Test Usage
+
 ```bash
+# Makefile targets: parse, scanner, clean, $testFile
 make $TEST_FILE
 ```

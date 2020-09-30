@@ -16,6 +16,7 @@
 ## Todo
 
 - [ ] 5 negative test cases
+- [ ] Get test 11 & 12 working, look at [parse.y](parse.y) comments
 
 ## Test Usage for Flex
 
@@ -33,7 +34,7 @@ Switch `DEBUG_LEX` to `1` in [parse.l](parse.l)
 
 Switch `DEBUG_LEX` to `0` in [parse.l](parse.l)
 
-Switch `YDEBUG` to `1` IN [parse.y](parse.y) for debug output or `0` to cease all output
+Switch `YDEBUG` to `1` in [parse.y](parse.y) for debug output or `0` to cease all output
 
 ```bash
 # to run all tests and output to 'resultP.txt'

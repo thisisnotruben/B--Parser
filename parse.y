@@ -50,20 +50,13 @@ Prog
 	;
 
 Stmt
-	: IF LPARN Expr RPARN Stmt
-	| IF LPARN Expr RPARN Stmt ELSE Stmt
+	: IF LPARN Expr RPARN Stmt StmtIf		/* TODO: doesn't recognize SEMIC */
 	| WHILE LPARN Expr RPARN Stmt
-
-	| FOR LPARN Assign SEMIC Expr SEMIC Assign RPARN Stmt /* incomplete */
-
-	| RETURN SEMIC
-	| RETURN Expr SEMIC
-
-	| Assign SEMIC			/* incomplete */
-
-	| ID LPARN RPARN SEMIC	/* incomplete */
-
-	| LCURL Stmt RCURL
+	| FOR LPARN StmtForAssign SEMIC StmtForExpr SEMIC StmtForAssign RPARN Stmt
+	| RETURN StmtReturn SEMIC
+	| Assign SEMIC
+	| ID LPARN StmtID SEMIC
+	| LCURL Stmt RCURL			/* TODO: needs to be repetitive */
 	| SEMIC
 	;
 
@@ -71,13 +64,6 @@ Assign
 	: ID Assign1 EQUAL Expr	{Y_DEBUG_PRINT("Assign-1-ID-Assign1-EQUAL-Expr"); }
 	;
 
-Assign1 
-	:						{ Y_DEBUG_PRINT("Assign1-1-Empty"); }
-	| LBRAC Expr RBRAC		{ Y_DEBUG_PRINT("Assign1-2-LBRAC-Expr-RBRAC"); }
-	| LBRAC Expr error		{ warn(": missing RBRAC"); }
-	| error Expr RBRAC		{ warn(": missing LBRAC"); }
-	| LBRAC error RBRAC		{ warn(": Invalid array index"); }
-	;
 
 Expr
 	: SUB Expr %prec UMINUS	{ Y_DEBUG_PRINT("Expr-1-UMINUS Expr"); }
@@ -85,20 +71,13 @@ Expr
 	| Expr Binop Expr		{ Y_DEBUG_PRINT("Expr-3-Expr-Binop-Expr"); }
 	| Expr Relop Expr		{ Y_DEBUG_PRINT("Expr-4-Expr-Binop-Expr"); }
 	| Expr Logop Expr		{ Y_DEBUG_PRINT("Expr-5-Expr-Logop-Expr"); }
-
-	| ID					{ Y_DEBUG_PRINT("Expr-6-ID"); }
-
+	| ID ExprId				{ Y_DEBUG_PRINT("Expr-6-ID"); }
 	| LPARN Expr RPARN		{ Y_DEBUG_PRINT("Expr-7-LPARN-Expr-RPARN");}
 	| INTCON				{ Y_DEBUG_PRINT("Expr-8-INTCON"); }
 	| CHARCON				{ Y_DEBUG_PRINT("Expr-9-CHARCON"); }
 	| STRINGCON				{ Y_DEBUG_PRINT("Expr-10-STRINGCON"); }
 	| Array					{ Y_DEBUG_PRINT("Expr-11-Array"); }
 	| error					{ warn(":invalid expression "); }
-	;
-
-Array
-	: ID LBRAC Expr RBRAC		{ Y_DEBUG_PRINT("Array-1-ID-LBRAC-Expr-RBRAC"); }
-	| ID error RBRAC		{ warn( ": invalid array expression"); }
 	;
 
 Binop
@@ -112,14 +91,64 @@ Relop
 	: EQUALS				{ Y_DEBUG_PRINT("Relop-1-EQUALS"); }
 	| NOTEQU 				{ Y_DEBUG_PRINT("Relop-2-NOTEQU"); }
 	| LESEQU 				{ Y_DEBUG_PRINT("Relop-3-LESEQU"); }
+	| LESSTH 				{ Y_DEBUG_PRINT("Relop-6-LESSTH"); }
 	| GREEQU 				{ Y_DEBUG_PRINT("Relop-4-GREEQU"); }
 	| GREATE 				{ Y_DEBUG_PRINT("Relop-5-GREATE"); }
-	| LESSTH 				{ Y_DEBUG_PRINT("Relop-6-LESSTH"); }
 	;
 
 Logop
-	: ANDCOM					{ Y_DEBUG_PRINT("Logop-1-ANDCOM"); }
+	: ANDCOM				{ Y_DEBUG_PRINT("Logop-1-ANDCOM"); }
 	| ORCOMP				{ Y_DEBUG_PRINT("Logop-2-ORCOMP"); }
+	;
+
+Assign1
+	:						{ Y_DEBUG_PRINT("Assign1-1-Empty"); }
+	| LBRAC Expr RBRAC		{ Y_DEBUG_PRINT("Assign1-2-LBRAC-Expr-RBRAC"); }
+	| LBRAC Expr error		{ warn(": missing RBRAC"); }
+	| error Expr RBRAC		{ warn(": missing LBRAC"); }
+	| LBRAC error RBRAC		{ warn(": Invalid array index"); }
+	;
+
+StmtIf
+	:
+	| ELSE Stmt
+	;
+
+StmtReturn
+	:
+	| Expr
+	;
+
+StmtID
+	:
+	| ExprList
+	;
+
+StmtForAssign
+	:
+	| Assign
+	;
+
+StmtForExpr
+	:
+	| Expr
+	;
+
+ExprList
+	: Expr
+	| ExprList ',' Expr
+	;
+
+Array
+	: ID LBRAC Expr RBRAC		{ Y_DEBUG_PRINT("Array-1-ID-LBRAC-Expr-RBRAC"); }
+	| ID error RBRAC			{ warn( ": invalid array expression"); }
+	;
+
+ExprId
+	:
+	| LPARN RPARN
+	| LPARN ExprList RPARN
+	| LBRAC Expr RBRAC /* TODO: redundant, but logical */
 	;
 
 %%

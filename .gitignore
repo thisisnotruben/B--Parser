@@ -6,5 +6,4 @@ a.out
 scanner
 parse
 *.o
-resultP.txt
-resultS.txt
+*.txt

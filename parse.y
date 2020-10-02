@@ -29,6 +29,12 @@ extern int lex_state;
 %token EQUAL ADD SUB MUL DIV ID EXTERN FOR WHILE RETURN IF ELSE
 %token VOID CHAR INT OTHER
 
+%nonassoc PREC_LOWER_THAN_ELSE
+%nonassoc ELSE
+%nonassoc PREC_LOGOP
+%nonassoc PREC_RELOP
+%nonassoc PRECBINOP
+
 %left ORCOMP
 %left ANDCOM
 %left EQUALS NOTEQU
@@ -46,7 +52,8 @@ Prog
 	;
 
 Stmt
-	: IF LPARN Expr RPARN Stmt StmtIf		/* TODO: doesn't recognize SEMIC */
+	: IF LPARN Expr RPARN Stmt %prec PREC_LOWER_THAN_ELSE		/* TODO: doesn't recognize SEMIC */
+	| IF LPARN Expr RPARN Stmt ELSE Stmt
 	| WHILE LPARN Expr RPARN Stmt
 	| FOR LPARN StmtForAssign SEMIC StmtForExpr SEMIC StmtForAssign RPARN Stmt
 	| RETURN StmtReturn SEMIC
@@ -61,37 +68,33 @@ Assign
 	;
 
 Expr
-	: SUB Expr %prec UMINUS	{ Y_DEBUG_PRINT("Expr-1-UMINUS Expr"); }
-	| ABANG Expr			{ Y_DEBUG_PRINT("Expr-2-ANABG Expr"); }
-	| Expr Op				{ Y_DEBUG_PRINT("Expr-3-Expr-Binop-Expr"); }
-	| ID ExprId				{ Y_DEBUG_PRINT("Expr-6-ID"); }
-	| LPARN Expr RPARN		{ Y_DEBUG_PRINT("Expr-7-LPARN-Expr-RPARN");}
-	| INTCON				{ Y_DEBUG_PRINT("Expr-8-INTCON"); }
-	| CHARCON				{ Y_DEBUG_PRINT("Expr-9-CHARCON"); }
-	| STRINGCON				{ Y_DEBUG_PRINT("Expr-10-STRINGCON"); }
-	| error					{ warn(":invalid expression "); }
-	;
-
-Op
-	: Binop Expr
-	| Relop Expr
-	| Logop Expr
+	: SUB Expr %prec UMINUS				{ Y_DEBUG_PRINT("Expr-1-UMINUS Expr"); }
+	| ABANG Expr						{ Y_DEBUG_PRINT("Expr-2-ANABG Expr"); }
+	| Expr Logop Expr %prec PREC_LOGOP	{ Y_DEBUG_PRINT("Expr-3-Expr-Logop-Expr"); }
+	| Expr Relop Expr %prec PREC_RELOP	{ Y_DEBUG_PRINT("Expr-3-Expr-Relop-Expr"); }
+	| Expr Binop Expr %prec PRECBINOP	{ Y_DEBUG_PRINT("Expr-3-Expr-Binop-Expr"); }
+	| ID ExprId							{ Y_DEBUG_PRINT("Expr-6-ID"); }
+	| LPARN Expr RPARN					{ Y_DEBUG_PRINT("Expr-7-LPARN-Expr-RPARN");}
+	| INTCON							{ Y_DEBUG_PRINT("Expr-8-INTCON"); }
+	| CHARCON							{ Y_DEBUG_PRINT("Expr-9-CHARCON"); }
+	| STRINGCON							{ Y_DEBUG_PRINT("Expr-10-STRINGCON"); }
+	| error								{ warn(":invalid expression "); }
 	;
 
 Binop
 	: ADD					{ Y_DEBUG_PRINT("Binop-1-ADD"); }
-	| SUB 					{ Y_DEBUG_PRINT("Binop-2-SUB"); }
-	| MUL 					{ Y_DEBUG_PRINT("Binop-3-MUL"); }
-	| DIV 					{ Y_DEBUG_PRINT("Binop-4-DIV"); }
+	| SUB					{ Y_DEBUG_PRINT("Binop-2-SUB"); }
+	| MUL					{ Y_DEBUG_PRINT("Binop-3-MUL"); }
+	| DIV					{ Y_DEBUG_PRINT("Binop-4-DIV"); }
 	;
 
 Relop
 	: EQUALS				{ Y_DEBUG_PRINT("Relop-1-EQUALS"); }
-	| NOTEQU 				{ Y_DEBUG_PRINT("Relop-2-NOTEQU"); }
-	| LESEQU 				{ Y_DEBUG_PRINT("Relop-3-LESEQU"); }
-	| LESSTH 				{ Y_DEBUG_PRINT("Relop-6-LESSTH"); }
-	| GREEQU 				{ Y_DEBUG_PRINT("Relop-4-GREEQU"); }
-	| GREATE 				{ Y_DEBUG_PRINT("Relop-5-GREATE"); }
+	| NOTEQU				{ Y_DEBUG_PRINT("Relop-2-NOTEQU"); }
+	| LESEQU				{ Y_DEBUG_PRINT("Relop-3-LESEQU"); }
+	| LESSTH				{ Y_DEBUG_PRINT("Relop-6-LESSTH"); }
+	| GREEQU				{ Y_DEBUG_PRINT("Relop-4-GREEQU"); }
+	| GREATE				{ Y_DEBUG_PRINT("Relop-5-GREATE"); }
 	;
 
 Logop
@@ -102,14 +105,6 @@ Logop
 Assign1
 	:						{ Y_DEBUG_PRINT("Assign1-1-Empty"); }
 	| LBRAC Expr RBRAC		{ Y_DEBUG_PRINT("Assign1-2-LBRAC-Expr-RBRAC"); }
-	| LBRAC Expr error		{ warn(": missing RBRAC"); }
-	| error Expr RBRAC		{ warn(": missing LBRAC"); }
-	| LBRAC error RBRAC		{ warn(": Invalid array index"); }
-	;
-
-StmtIf
-	:
-	| ELSE Stmt
 	;
 
 StmtReturn
@@ -118,8 +113,8 @@ StmtReturn
 	;
 
 StmtId
-	:				{ Y_DEBUG_PRINT("StmtId-Empty"); }
-	| ExprList		{ Y_DEBUG_PRINT("StmtId-ExprList"); }
+	:
+	| ExprList
 	;
 
 StmtForAssign
@@ -133,15 +128,15 @@ StmtForExpr
 	;
 
 ExprList
-	: Expr						{ Y_DEBUG_PRINT("ExprList-Expr"); }
-	| ExprList COMMA Expr		{ Y_DEBUG_PRINT("ExprList-ExprList,Expr"); }
+	: Expr
+	| ExprList COMMA Expr
 	;
 
 ExprId
-	:							{ Y_DEBUG_PRINT("ExprId-Empty"); }
-	| LPARN StmtId RPARN		{ Y_DEBUG_PRINT("ExprId-LPARN StmtId RPARN"); }
-	| LBRAC Expr RBRAC			{ Y_DEBUG_PRINT("ExprId-LBRAC Expr RBRAC"); }
-	| error RBRAC				{ warn( ": invalid array expression"); }
+	:
+	| LPARN StmtId RPARN
+	| LBRAC Expr RBRAC
+	| error RBRAC
 	;
 
 %%

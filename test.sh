@@ -52,7 +52,7 @@ function testAllParser {
 
 		test=$(basename -s $EXTENSION $filePath)
 
-		make $test 2> /dev/null
+		make $test
 		errorCode=$?
 
 		testResults+="$test: [$errorCode]"$NEW_LINE

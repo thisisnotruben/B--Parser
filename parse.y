@@ -16,15 +16,11 @@
 void yyerror(char const *);
 void warn(char const *s);
 
-extern int lex_state;
-
-int yydebug = 1;
+extern int yylex(void);
 extern char the_token[];
-/* This is how I read tokens from lex... :) */
 extern int input_line_nbr;
-/* This is the current line number */
 extern char *full_line;
-/* This is the full line */
+extern int lex_state;
 
 %}
 
@@ -55,7 +51,7 @@ Stmt
 	| FOR LPARN StmtForAssign SEMIC StmtForExpr SEMIC StmtForAssign RPARN Stmt
 	| RETURN StmtReturn SEMIC
 	| Assign SEMIC
-	| ID LPARN StmtID SEMIC
+	| ID LPARN StmtId RPARN SEMIC
 	| LCURL Stmt RCURL			/* TODO: needs to be repetitive */
 	| SEMIC
 	;
@@ -64,20 +60,22 @@ Assign
 	: ID Assign1 EQUAL Expr	{Y_DEBUG_PRINT("Assign-1-ID-Assign1-EQUAL-Expr"); }
 	;
 
-
 Expr
 	: SUB Expr %prec UMINUS	{ Y_DEBUG_PRINT("Expr-1-UMINUS Expr"); }
 	| ABANG Expr			{ Y_DEBUG_PRINT("Expr-2-ANABG Expr"); }
-	| Expr Binop Expr		{ Y_DEBUG_PRINT("Expr-3-Expr-Binop-Expr"); }
-	| Expr Relop Expr		{ Y_DEBUG_PRINT("Expr-4-Expr-Binop-Expr"); }
-	| Expr Logop Expr		{ Y_DEBUG_PRINT("Expr-5-Expr-Logop-Expr"); }
+	| Expr Op				{ Y_DEBUG_PRINT("Expr-3-Expr-Binop-Expr"); }
 	| ID ExprId				{ Y_DEBUG_PRINT("Expr-6-ID"); }
 	| LPARN Expr RPARN		{ Y_DEBUG_PRINT("Expr-7-LPARN-Expr-RPARN");}
 	| INTCON				{ Y_DEBUG_PRINT("Expr-8-INTCON"); }
 	| CHARCON				{ Y_DEBUG_PRINT("Expr-9-CHARCON"); }
 	| STRINGCON				{ Y_DEBUG_PRINT("Expr-10-STRINGCON"); }
-	| Array					{ Y_DEBUG_PRINT("Expr-11-Array"); }
 	| error					{ warn(":invalid expression "); }
+	;
+
+Op
+	: Binop Expr
+	| Relop Expr
+	| Logop Expr
 	;
 
 Binop
@@ -119,9 +117,9 @@ StmtReturn
 	| Expr
 	;
 
-StmtID
-	:
-	| ExprList
+StmtId
+	:				{ Y_DEBUG_PRINT("StmtId-Empty"); }
+	| ExprList		{ Y_DEBUG_PRINT("StmtId-ExprList"); }
 	;
 
 StmtForAssign
@@ -135,20 +133,15 @@ StmtForExpr
 	;
 
 ExprList
-	: Expr
-	| ExprList ',' Expr
-	;
-
-Array
-	: ID LBRAC Expr RBRAC		{ Y_DEBUG_PRINT("Array-1-ID-LBRAC-Expr-RBRAC"); }
-	| ID error RBRAC			{ warn( ": invalid array expression"); }
+	: Expr						{ Y_DEBUG_PRINT("ExprList-Expr"); }
+	| ExprList COMMA Expr		{ Y_DEBUG_PRINT("ExprList-ExprList,Expr"); }
 	;
 
 ExprId
-	:
-	| LPARN RPARN
-	| LPARN ExprList RPARN
-	| LBRAC Expr RBRAC /* TODO: redundant, but logical */
+	:							{ Y_DEBUG_PRINT("ExprId-Empty"); }
+	| LPARN StmtId RPARN		{ Y_DEBUG_PRINT("ExprId-LPARN StmtId RPARN"); }
+	| LBRAC Expr RBRAC			{ Y_DEBUG_PRINT("ExprId-LBRAC Expr RBRAC"); }
+	| error RBRAC				{ warn( ": invalid array expression"); }
 	;
 
 %%

@@ -16,7 +16,6 @@
 ## Todo
 
 - [ ] 5 negative test cases
-- [ ] Get test 11 & 12 working, look at [parse.y](parse.y) comments
 
 ## Test Usage for Flex
 

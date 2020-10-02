@@ -33,7 +33,7 @@ extern int lex_state;
 %nonassoc ELSE
 %nonassoc PREC_LOGOP
 %nonassoc PREC_RELOP
-%nonassoc PRECBINOP
+%nonassoc PREC_BINOP
 
 %left ORCOMP
 %left ANDCOM
@@ -47,21 +47,22 @@ extern int lex_state;
 %%
 
 Prog
-	: Stmt
-	| Prog Stmt
+	: StmtRep
 	;
 
 Stmt
-	: IF LPARN Expr RPARN Stmt %prec PREC_LOWER_THAN_ELSE		/* TODO: doesn't recognize SEMIC */
+	: IF LPARN Expr RPARN Stmt %prec PREC_LOWER_THAN_ELSE
 	| IF LPARN Expr RPARN Stmt ELSE Stmt
 	| WHILE LPARN Expr RPARN Stmt
-	| FOR LPARN StmtForAssign SEMIC StmtForExpr SEMIC StmtForAssign RPARN Stmt
-	| RETURN StmtReturn SEMIC
+	| FOR LPARN StmtForAssign SEMIC StmtOptExpr SEMIC StmtForAssign RPARN Stmt
+	| RETURN StmtOptExpr SEMIC
 	| Assign SEMIC
 	| ID LPARN StmtId RPARN SEMIC
-	| LCURL Stmt RCURL			/* TODO: needs to be repetitive */
+	| LCURL RCURL
+	| LCURL StmtRep RCURL
 	| SEMIC
 	;
+
 
 Assign
 	: ID Assign1 EQUAL Expr	{Y_DEBUG_PRINT("Assign-1-ID-Assign1-EQUAL-Expr"); }
@@ -72,7 +73,7 @@ Expr
 	| ABANG Expr						{ Y_DEBUG_PRINT("Expr-2-ANABG Expr"); }
 	| Expr Logop Expr %prec PREC_LOGOP	{ Y_DEBUG_PRINT("Expr-3-Expr-Logop-Expr"); }
 	| Expr Relop Expr %prec PREC_RELOP	{ Y_DEBUG_PRINT("Expr-3-Expr-Relop-Expr"); }
-	| Expr Binop Expr %prec PRECBINOP	{ Y_DEBUG_PRINT("Expr-3-Expr-Binop-Expr"); }
+	| Expr Binop Expr %prec PREC_BINOP	{ Y_DEBUG_PRINT("Expr-3-Expr-Binop-Expr"); }
 	| ID ExprId							{ Y_DEBUG_PRINT("Expr-6-ID"); }
 	| LPARN Expr RPARN					{ Y_DEBUG_PRINT("Expr-7-LPARN-Expr-RPARN");}
 	| INTCON							{ Y_DEBUG_PRINT("Expr-8-INTCON"); }
@@ -102,12 +103,12 @@ Logop
 	| ORCOMP				{ Y_DEBUG_PRINT("Logop-2-ORCOMP"); }
 	;
 
-Assign1
-	:						{ Y_DEBUG_PRINT("Assign1-1-Empty"); }
-	| LBRAC Expr RBRAC		{ Y_DEBUG_PRINT("Assign1-2-LBRAC-Expr-RBRAC"); }
+StmtForAssign
+	:
+	| Assign
 	;
 
-StmtReturn
+StmtOptExpr
 	:
 	| Expr
 	;
@@ -117,19 +118,14 @@ StmtId
 	| ExprList
 	;
 
-StmtForAssign
-	:
-	| Assign
+StmtRep
+	: Stmt
+	| StmtRep Stmt
 	;
 
-StmtForExpr
-	:
-	| Expr
-	;
-
-ExprList
-	: Expr
-	| ExprList COMMA Expr
+Assign1
+	:						{ Y_DEBUG_PRINT("Assign1-1-Empty"); }
+	| LBRAC Expr RBRAC		{ Y_DEBUG_PRINT("Assign1-2-LBRAC-Expr-RBRAC"); }
 	;
 
 ExprId
@@ -137,6 +133,11 @@ ExprId
 	| LPARN StmtId RPARN
 	| LBRAC Expr RBRAC
 	| error RBRAC
+	;
+
+ExprList
+	: Expr
+	| ExprList COMMA Expr
 	;
 
 %%

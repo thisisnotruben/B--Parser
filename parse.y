@@ -47,20 +47,21 @@ extern int lex_state;
 %%
 
 Prog
-	: StmtRep
+	: 						{ Y_DEBUG_PRINT("Prog-1 EMPTY"); }
+	| StmtRep				{ Y_DEBUG_PRINT("Prog-2 -> StmtRep"); }
 	;
 
 Stmt
-	: IF LPARN Expr RPARN Stmt %prec PREC_LOWER_THAN_ELSE
-	| IF LPARN Expr RPARN Stmt ELSE Stmt
-	| WHILE LPARN Expr RPARN Stmt
-	| FOR LPARN StmtForAssign SEMIC StmtOptExpr SEMIC StmtForAssign RPARN Stmt
-	| RETURN StmtOptExpr SEMIC
-	| Assign SEMIC
-	| ID LPARN StmtId RPARN SEMIC
-	| LCURL RCURL
-	| LCURL StmtRep RCURL
-	| SEMIC
+	: IF LPARN Expr RPARN Stmt %prec PREC_LOWER_THAN_ELSE							{ Y_DEBUG_PRINT("Stmt-1-IF Stmt"); }
+	| IF LPARN Expr RPARN Stmt ELSE Stmt											{ Y_DEBUG_PRINT("Stmt-2-IF-ELSE Stmt"); }
+	| WHILE LPARN Expr RPARN Stmt													{ Y_DEBUG_PRINT("Stmt-3-WHILE Stmt"); }
+	| FOR LPARN StmtForAssign SEMIC StmtOptExpr SEMIC StmtForAssign RPARN Stmt		{ Y_DEBUG_PRINT("Stmt-4-FOR Stmt"); }
+	| RETURN StmtOptExpr SEMIC														{ Y_DEBUG_PRINT("Stmt-5-RETURN Stmt"); }
+	| Assign SEMIC																	{ Y_DEBUG_PRINT("Stmt-6-Assign Stmt"); }
+	| ID LPARN StmtId RPARN SEMIC													{ Y_DEBUG_PRINT("Stmt-7-ID Stmt"); }
+	| LCURL RCURL																	{ Y_DEBUG_PRINT("Stmt-8-LCURL RCURL Stmt"); }
+	| LCURL StmtRep RCURL															{ Y_DEBUG_PRINT("Stmt-9-LCURL Stmt RCURL Stmt"); }
+	| SEMIC																			{ Y_DEBUG_PRINT("Stmt-10-SEMIC Stmt"); }
 	;
 
 
@@ -72,8 +73,8 @@ Expr
 	: SUB Expr %prec UMINUS				{ Y_DEBUG_PRINT("Expr-1-UMINUS Expr"); }
 	| ABANG Expr						{ Y_DEBUG_PRINT("Expr-2-ANABG Expr"); }
 	| Expr Logop Expr %prec PREC_LOGOP	{ Y_DEBUG_PRINT("Expr-3-Expr-Logop-Expr"); }
-	| Expr Relop Expr %prec PREC_RELOP	{ Y_DEBUG_PRINT("Expr-3-Expr-Relop-Expr"); }
-	| Expr Binop Expr %prec PREC_BINOP	{ Y_DEBUG_PRINT("Expr-3-Expr-Binop-Expr"); }
+	| Expr Relop Expr %prec PREC_RELOP	{ Y_DEBUG_PRINT("Expr-4-Expr-Relop-Expr"); }
+	| Expr Binop Expr %prec PREC_BINOP	{ Y_DEBUG_PRINT("Expr-5-Expr-Binop-Expr"); }
 	| ID ExprId							{ Y_DEBUG_PRINT("Expr-6-ID"); }
 	| LPARN Expr RPARN					{ Y_DEBUG_PRINT("Expr-7-LPARN-Expr-RPARN");}
 	| INTCON							{ Y_DEBUG_PRINT("Expr-8-INTCON"); }
@@ -105,22 +106,22 @@ Logop
 
 StmtForAssign
 	:
-	| Assign
+	| Assign				{ Y_DEBUG_PRINT("StmtForAssign -> Assign"); }
 	;
 
 StmtOptExpr
 	:
-	| Expr
+	| Expr					{ Y_DEBUG_PRINT("StmtOptExpr -> Expr"); }
 	;
 
 StmtId
 	:
-	| ExprList
+	| ExprList				{ Y_DEBUG_PRINT("StmtId -> ExprList"); }
 	;
 
 StmtRep
-	: Stmt
-	| StmtRep Stmt
+	: Stmt					{ Y_DEBUG_PRINT("StmtRep-1 -> Stmt"); }
+	| StmtRep Stmt			{ Y_DEBUG_PRINT("StmtRep-2 -> StmtRep Stmt"); }
 	;
 
 Assign1
@@ -129,15 +130,15 @@ Assign1
 	;
 
 ExprId
-	:
-	| LPARN StmtId RPARN
-	| LBRAC Expr RBRAC
-	| error RBRAC
+	:						{ Y_DEBUG_PRINT("ExprId-1-Empty"); }
+	| LPARN StmtId RPARN	{ Y_DEBUG_PRINT("ExprId-2-LPARN-StmtId-RPARN"); }
+	| LBRAC Expr RBRAC		{ Y_DEBUG_PRINT("ExprId-3-LBRAC-Expr-RBRAC"); }
+	| error RBRAC			{ Y_DEBUG_PRINT("ExprId-4-error-RBRAC"); }
 	;
 
 ExprList
-	: Expr
-	| ExprList COMMA Expr
+	: Expr					{ Y_DEBUG_PRINT("ExprList-1 -> Expr"); }
+	| ExprList COMMA Expr	{ Y_DEBUG_PRINT("ExprList-2 -> ExprList-COMMA-Expr"); }
 	;
 
 %%
@@ -148,11 +149,11 @@ int main(int argc, char **argv)
 
 	if (lex_state == 1)
 	{
-		yyerror("End of file within a comment");
+		yyerror("End of file within a comment\n");
 	}
 	else if (lex_state == 2)
 	{
-		yyerror("End of file within a string");
+		yyerror("End of file within a string\n");
 	}
 
 	return result;
@@ -160,6 +161,6 @@ int main(int argc, char **argv)
 
 int yywrap() { return 1; }
 
-void yyerror(char const *s) { fprintf(stderr, "%s on line %d", s, input_line_nbr); }
+void yyerror(char const *s) { fprintf(stderr, "%s on line %d\n", s, input_line_nbr); }
 
 void warn(char const *s) { fprintf(stderr, "%s\n", s); }

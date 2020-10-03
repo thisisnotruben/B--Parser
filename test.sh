@@ -39,36 +39,41 @@ function makeParser {
 	make parse
 }
 
+function runParser {
+	./parse < $TEST_DIR/$1$EXTENSION
+}
+
 function testAllParser {
 	
 	testResults="──── Date made: $(date) ────"$NEW_LINE
-	testResults+="TEST  | EXIT CODE"$NEW_LINE$NEW_LINE
+	testResults+="TEST  | OUTPUT LENGTH"$NEW_LINE$NEW_LINE
 
-	exitCodeOk=0
-	exitCodeErr=0
+	outOk=0
+	outEr=0
 
 	makeParser
 	for filePath in $TEST_DIR/*$EXTENSION; do
 
-		test=$(basename -s $EXTENSION $filePath)
+		testFile=$(basename -s $EXTENSION $filePath)
+		
+		# `2>&1` captures stdout & stderr
+		out=$(runParser $testFile 2>&1)
+		outLen=${#out}
 
-		make $test
-		errorCode=$?
+		testResults+="$testFile: "$outLen$NEW_LINE
 
-		testResults+="$test: [$errorCode]"$NEW_LINE
-
-		if [ $errorCode -eq 0 ]; then
-			exitCodeOk=$((exitCodeOk+1))
+		if [ $outLen -eq 0 ]; then
+			outOk=$((outOk+1))
 		else
-			exitCodeErr=$((exitCodeErr+1))
+			outEr=$((outEr+1))
 		fi
 
 	done
 
-	testResults+=$NEW_LINE"Exit code Ok: "$exitCodeOk$NEW_LINE
-	testResults+="Exit code Er: "$exitCodeErr
+	testResults+=$NEW_LINE"No output: "$outOk$NEW_LINE
+	testResults+="Has output: "$outEr
 	
-	tee $PARSER_OUTPUT_FILE <<< $testResults > /dev/null
+	tee $PARSER_OUTPUT_FILE <<< $testResults
 }
 
 if [ $@ = 's' ]; then

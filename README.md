@@ -13,10 +13,6 @@
 * Flex 2.6.4.
 * Bison 3.0.4.
 
-## Todo
-
-- [ ] 5 negative test cases
-
 ## Test Usage for Flex
 
 Switch `DEBUG_LEX` to `1` in [parse.l](parse.l)
